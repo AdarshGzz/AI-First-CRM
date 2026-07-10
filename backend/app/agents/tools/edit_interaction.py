@@ -6,6 +6,7 @@ Writes: Only the changed fields (partial update)
 """
 
 import json
+from datetime import date, timedelta
 # pyrefly: ignore [missing-import]
 from langchain_groq import ChatGroq
 # pyrefly: ignore [missing-import]
@@ -40,6 +41,12 @@ Available fields:
 
 Return ONLY valid JSON with the changed fields. No markdown, no explanations.
 
+IMPORTANT: Today's date is {today}. When the user references relative dates, resolve them:
+- "today" → {today}
+- "tomorrow" → {tomorrow}
+- "day after tomorrow" → {day_after_tomorrow}
+- "yesterday" → {yesterday}
+
 Examples:
 - Current state: {{"time": "14:00"}}
   Message: "Actually the time was 3pm not 2pm"
@@ -70,8 +77,16 @@ async def edit_interaction(message: str, current_state: dict) -> dict:
 
     current_state_str = json.dumps(current_state, indent=2, default=str)
 
+    today = date.today()
+    system_prompt = EDIT_INTERACTION_PROMPT.format(
+        today=today.isoformat(),
+        tomorrow=(today + timedelta(days=1)).isoformat(),
+        day_after_tomorrow=(today + timedelta(days=2)).isoformat(),
+        yesterday=(today - timedelta(days=1)).isoformat(),
+    )
+
     messages = [
-        SystemMessage(content=EDIT_INTERACTION_PROMPT),
+        SystemMessage(content=system_prompt),
         HumanMessage(
             content=f"Current form state:\n{current_state_str}\n\n"
                     f"User's correction:\n{message}"

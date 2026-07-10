@@ -6,6 +6,7 @@ Writes: Full form JSON (all fields extracted from the message)
 """
 
 import json
+from datetime import date, timedelta
 # pyrefly: ignore [missing-import]
 from langchain_groq import ChatGroq
 # pyrefly: ignore [missing-import]
@@ -34,7 +35,12 @@ Extract the following fields from the user's message. Return ONLY valid JSON, no
 
 Rules:
 - If a field is not mentioned, use reasonable defaults (empty string or empty array).
-- For dates, try to interpret relative dates (e.g., "today", "yesterday") if possible, but if you can't determine the exact date, leave it empty.
+- For dates, resolve ALL relative references using today's date which is {today}:
+  - "today" → {today}
+  - "tomorrow" → {tomorrow}
+  - "day after tomorrow" → {day_after_tomorrow}
+  - "yesterday" → {yesterday}
+  If no date is mentioned, leave it empty.
 - For sentiment, infer from context clues like "positive", "receptive", "interested" → Positive, "concerned", "unhappy", "skeptical" → Negative, otherwise → Neutral.
 - Return ONLY the JSON object, no markdown, no explanations."""
 
@@ -50,8 +56,16 @@ async def log_interaction(message: str, current_state: dict) -> dict:
         temperature=0.1,
     )
 
+    today = date.today()
+    system_prompt = LOG_INTERACTION_PROMPT.format(
+        today=today.isoformat(),
+        tomorrow=(today + timedelta(days=1)).isoformat(),
+        day_after_tomorrow=(today + timedelta(days=2)).isoformat(),
+        yesterday=(today - timedelta(days=1)).isoformat(),
+    )
+
     messages = [
-        SystemMessage(content=LOG_INTERACTION_PROMPT),
+        SystemMessage(content=system_prompt),
         HumanMessage(content=f"Extract interaction data from this message:\n\n{message}"),
     ]
 
