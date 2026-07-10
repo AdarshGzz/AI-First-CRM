@@ -3,11 +3,8 @@
  * Handles connection lifecycle, message sending, and auto-reconnect.
  */
 
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://127.0.0.1:8000/ws/chat';
+const WS_URL = import.meta.env.VITE_WS_URL || 'wss://ai-crm-api-g7hdd0b0ajhdcpee.centralindia-01.azurewebsites.net/ws/chat';
 
-console.log("MODE:", import.meta.env.MODE);
-console.log("ENV:", import.meta.env);
-console.log("WS_URL:", WS_URL);
 
 class ChatWebSocket {
   constructor() {
