@@ -1,20 +1,33 @@
 """
-Async SQLAlchemy engine and session factory for Neon Postgres.
+Async SQLAlchemy engine and session factory.
+Supports both PostgreSQL (production) and SQLite (tests).
 """
 
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+# pyrefly: ignore [missing-import]
+from sqlalchemy.ext.asyncio import (
+    create_async_engine,
+    AsyncSession,
+    async_sessionmaker,
+)
 from app.core.config import settings
 from app.models.db_models import Base
 
+DATABASE_URL = settings.async_database_url
 
-# Use the auto-converted async URL (postgresql+asyncpg://, ssl=require, no channel_binding)
-engine = create_async_engine(
-    settings.async_database_url,
-    echo=False,
-    pool_pre_ping=True,
-    pool_size=5,
-    max_overflow=10,
-)
+# PostgreSQL vs SQLite
+if DATABASE_URL.startswith("sqlite"):
+    engine = create_async_engine(
+        DATABASE_URL,
+        echo=False,
+    )
+else:
+    engine = create_async_engine(
+        DATABASE_URL,
+        echo=False,
+        pool_pre_ping=True,
+        pool_size=5,
+        max_overflow=10,
+    )
 
 async_session_factory = async_sessionmaker(
     engine,

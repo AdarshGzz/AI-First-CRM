@@ -3,6 +3,7 @@ Centralized configuration — loaded once from environment variables.
 Every other module imports `settings` from here instead of reading os.environ directly.
 """
 
+# pyrefly: ignore [missing-import]
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 
@@ -53,7 +54,7 @@ class Settings(BaseSettings):
         return url
 
     model_config = {
-        "env_file": ".env",
+        "env_file": (".env", "../.env"),
         "env_file_encoding": "utf-8",
         "extra": "ignore",
     }
