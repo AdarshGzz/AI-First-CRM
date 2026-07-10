@@ -5,6 +5,10 @@
 
 const WS_URL = import.meta.env.VITE_WS_URL || 'ws://127.0.0.1:8000/ws/chat';
 
+console.log("MODE:", import.meta.env.MODE);
+console.log("ENV:", import.meta.env);
+console.log("WS_URL:", WS_URL);
+
 class ChatWebSocket {
   constructor() {
     this.ws = null;
