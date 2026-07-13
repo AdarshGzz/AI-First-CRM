@@ -6,6 +6,7 @@
 const WS_URL = import.meta.env.VITE_WS_URL || 'wss://ai-crm-api-g7hdd0b0ajhdcpee.centralindia-01.azurewebsites.net/ws/chat';
 
 
+
 class ChatWebSocket {
   constructor() {
     this.ws = null;

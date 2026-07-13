@@ -11,7 +11,6 @@ from datetime import date, timedelta
 from langchain_groq import ChatGroq
 # pyrefly: ignore [missing-import]
 from langchain_core.messages import HumanMessage, SystemMessage
-# pyrefly: ignore [missing-import]
 from app.core.config import settings
 from app.core.json_utils import extract_json
 
